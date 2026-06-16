@@ -1,699 +1,187 @@
-export default function Dashboard() {
-  
-  
+const kpis = [
+  { label: "Monthly Revenue", value: "PKR 2.48M", change: "+12.4%", tone: "text-emerald-700" },
+  { label: "Open Orders", value: "186", change: "24 urgent", tone: "text-amber-700" },
+  { label: "Inventory Value", value: "PKR 8.9M", change: "+4.1%", tone: "text-sky-700" },
+  { label: "Pending Payments", value: "PKR 640K", change: "18 invoices", tone: "text-rose-700" },
+];
+
+const navigation = [
+  "Dashboard",
+  "Sales",
+  "Inventory",
+  "Production",
+  "Dispatch",
+  "Finance",
+  "Reports",
+  "Settings",
+];
+
+const inventory = [
+  { name: "Kraft Paper", stock: "12.4 tons", status: "Healthy", level: "82%" },
+  { name: "Corrugated Sheets", stock: "8,420 pcs", status: "Reorder soon", level: "42%" },
+  { name: "Packing Tape", stock: "1,260 rolls", status: "Healthy", level: "76%" },
+  { name: "Printed Labels", stock: "18,500 pcs", status: "Low stock", level: "23%" },
+];
+
+const transactions = [
+  { id: "INV-1028", party: "Ashraf Sons Pharma", type: "Invoice", amount: "PKR 184,000", time: "09:45 AM" },
+  { id: "PO-447", party: "AJ Paper Mills", type: "Purchase", amount: "PKR 520,000", time: "10:20 AM" },
+  { id: "DSP-318", party: "Nutra Pharma", type: "Dispatch", amount: "48 cartons", time: "11:05 AM" },
+  { id: "PAY-882", party: "Surgitex Pharma", type: "Payment", amount: "PKR 96,000", time: "12:15 PM" },
+];
+
+export default function Home() {
   return (
-    <main className="min-h-screen bg-slate-950 text-white flex">
+    <main className="min-h-screen bg-[#f5f7fb] text-slate-950">
+      <section className="grid min-h-screen lg:grid-cols-[420px_1fr]">
+        <aside className="flex flex-col justify-between bg-slate-950 px-8 py-8 text-white">
+          <div>
+            <div className="mb-10">
+              <p className="text-sm font-semibold uppercase tracking-[0.22em] text-sky-300">
+                Essa Packages
+              </p>
+              <h1 className="mt-3 text-3xl font-bold">ERP Control Room</h1>
+            </div>
 
-      {/* Sidebar */}
-      <aside className="w-72 bg-slate-900 p-6">
-        <h1 className="text-3xl font-bold mb-10">
-          Essa ERP
-        </h1>
-
-        <nav className="space-y-4">
-          <div className="bg-blue-600 p-4 rounded-xl cursor-pointer">
-            Dashboard
+            <div className="rounded-lg border border-white/10 bg-white/5 p-5">
+              <h2 className="text-xl font-semibold">Secure Login</h2>
+              <form className="mt-6 space-y-4">
+                <label className="block text-sm font-medium text-slate-200">
+                  Email
+                  <input
+                    className="mt-2 w-full rounded-md border border-white/10 bg-slate-900 px-4 py-3 text-white outline-none transition focus:border-sky-300"
+                    defaultValue="admin@essapackages.com"
+                    type="email"
+                  />
+                </label>
+                <label className="block text-sm font-medium text-slate-200">
+                  Password
+                  <input
+                    className="mt-2 w-full rounded-md border border-white/10 bg-slate-900 px-4 py-3 text-white outline-none transition focus:border-sky-300"
+                    defaultValue="password"
+                    type="password"
+                  />
+                </label>
+                <button className="w-full rounded-md bg-sky-400 px-4 py-3 font-semibold text-slate-950 transition hover:bg-sky-300">
+                  Sign in
+                </button>
+              </form>
+            </div>
           </div>
 
-          <div className="bg-slate-800 p-4 rounded-xl cursor-pointer hover:bg-slate-700">
-            Sales
+          <div className="mt-8 rounded-lg border border-emerald-300/30 bg-emerald-300/10 p-4 text-sm text-emerald-100">
+            System status: production, inventory, dispatch, and finance modules are ready for API integration.
           </div>
+        </aside>
 
-          <div className="bg-slate-800 p-4 rounded-xl cursor-pointer hover:bg-slate-700">
-            Inventory
-          </div>
-
-          <div className="bg-slate-800 p-4 rounded-xl cursor-pointer hover:bg-slate-700">
-            Customers
-          </div>
-
-          <div className="bg-slate-800 p-4 rounded-xl cursor-pointer hover:bg-slate-700">
-            Reports
-          </div>
-        </nav>
-      </aside>
-
-      {/* Main Content */}
-      <section className="flex-1 p-10">
-        <h2 className="text-3xl font-bold mb-10">
-          ERP Dashboard
-        </h2>
-
-       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <div className="bg-slate-800 p-6 rounded-2xl">
-            <h3 className="text-2xl">Sales</h3>
-            <p className="text-4xl font-bold mt-4">
-              PKR 500,000
+        <div className="flex min-w-0">
+          <nav className="hidden w-60 shrink-0 border-r border-slate-200 bg-white px-4 py-6 lg:block">
+            <p className="px-3 text-xs font-bold uppercase tracking-[0.18em] text-slate-400">
+              Modules
             </p>
-          </div>
+            <div className="mt-5 space-y-1">
+              {navigation.map((item) => (
+                <a
+                  className={`block rounded-md px-3 py-3 text-sm font-semibold ${
+                    item === "Dashboard"
+                      ? "bg-slate-950 text-white"
+                      : "text-slate-600 hover:bg-slate-100 hover:text-slate-950"
+                  }`}
+                  href="#"
+                  key={item}
+                >
+                  {item}
+                </a>
+              ))}
+            </div>
+          </nav>
 
-          <div className="bg-slate-800 p-6 rounded-2xl">
-            <h3 className="text-xl">Orders</h3>
-            <p className="text-2xl font-bold mt-4">
-              240
-            </p>
-          </div>
+          <section className="min-w-0 flex-1 overflow-hidden px-5 py-6 sm:px-8 lg:px-10">
+            <header className="flex flex-col gap-4 border-b border-slate-200 pb-6 md:flex-row md:items-center md:justify-between">
+              <div>
+                <p className="text-sm font-semibold text-slate-500">Tuesday, June 16, 2026</p>
+                <h2 className="mt-1 text-3xl font-bold tracking-normal">Dashboard</h2>
+              </div>
+              <div className="flex items-center gap-3 rounded-md border border-slate-200 bg-white px-4 py-3">
+                <span className="h-2.5 w-2.5 rounded-full bg-emerald-500" />
+                <span className="text-sm font-semibold text-slate-700">Live operations</span>
+              </div>
+            </header>
 
-          <div className="bg-slate-800 p-6 rounded-2xl">
-            <h3 className="text-2xl">Customers</h3>
-            <p className="text-2xl font-bold mt-4">
-              120
-            </p>
-          </div>
+            <div className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+              {kpis.map((item) => (
+                <article className="rounded-lg border border-slate-200 bg-white p-5" key={item.label}>
+                  <p className="text-sm font-semibold text-slate-500">{item.label}</p>
+                  <div className="mt-4 flex items-end justify-between gap-3">
+                    <p className="text-2xl font-bold">{item.value}</p>
+                    <p className={`text-sm font-bold ${item.tone}`}>{item.change}</p>
+                  </div>
+                </article>
+              ))}
+            </div>
+
+            <div className="mt-6 grid gap-6 xl:grid-cols-[1fr_1.25fr]">
+              <section className="rounded-lg border border-slate-200 bg-white p-5">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-lg font-bold">Inventory Summary</h3>
+                  <button className="rounded-md border border-slate-200 px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50">
+                    Review stock
+                  </button>
+                </div>
+                <div className="mt-5 space-y-5">
+                  {inventory.map((item) => (
+                    <div key={item.name}>
+                      <div className="flex items-center justify-between gap-4 text-sm">
+                        <div>
+                          <p className="font-semibold text-slate-950">{item.name}</p>
+                          <p className="mt-1 text-slate-500">{item.stock}</p>
+                        </div>
+                        <p className="font-semibold text-slate-600">{item.status}</p>
+                      </div>
+                      <div className="mt-3 h-2 rounded-full bg-slate-100">
+                        <div className="h-2 rounded-full bg-sky-500" style={{ width: item.level }} />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </section>
+
+              <section className="rounded-lg border border-slate-200 bg-white p-5">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-lg font-bold">Recent Transactions</h3>
+                  <button className="rounded-md bg-slate-950 px-3 py-2 text-sm font-semibold text-white hover:bg-slate-800">
+                    Export
+                  </button>
+                </div>
+                <div className="mt-5 overflow-x-auto">
+                  <table className="w-full min-w-[620px] text-left text-sm">
+                    <thead>
+                      <tr className="border-b border-slate-200 text-slate-500">
+                        <th className="pb-3 font-semibold">Reference</th>
+                        <th className="pb-3 font-semibold">Party</th>
+                        <th className="pb-3 font-semibold">Type</th>
+                        <th className="pb-3 font-semibold">Amount</th>
+                        <th className="pb-3 font-semibold">Time</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100">
+                      {transactions.map((item) => (
+                        <tr key={item.id}>
+                          <td className="py-4 font-semibold text-slate-950">{item.id}</td>
+                          <td className="py-4 text-slate-700">{item.party}</td>
+                          <td className="py-4 text-slate-700">{item.type}</td>
+                          <td className="py-4 font-semibold text-slate-950">{item.amount}</td>
+                          <td className="py-4 text-slate-500">{item.time}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </section>
+            </div>
+          </section>
         </div>
-        <div className="mt-10 bg-slate-800 p-6 rounded-2xl">
-  <h2 className="text-2xl font-bold mb-4">Recent Orders</h2>
-  <div className="mt-10 bg-slate-800 p-6 rounded-2xl">
-
-  <h2 className="text-3xl font-bold mb-6">
-    Create Invoice
-  </h2>
-
-  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-
-    <input
-      type="text"
-      placeholder="Customer Name"
-      className="p-4 rounded-xl bg-slate-700 text-white"
-    />
-
-    <input
-      type="text"
-      placeholder="Product Name"
-      className="p-4 rounded-xl bg-slate-700 text-white"
-    />
-
-    <input
-      type="number"
-      placeholder="Quantity"
-      className="p-4 rounded-xl bg-slate-700 text-white"
-    />
-
-    <input
-      type="number"
-      placeholder="Price"
-      className="p-4 rounded-xl bg-slate-700 text-white"
-    />
-
-  </div>
-
-  <button className="mt-6 bg-blue-600 hover:bg-blue-700 px-8 py-4 rounded-xl font-bold">
-    Generate Invoice
-  </button>
-
-</div>
-<div className="mt-10 grid grid-cols-1 md:grid-cols-2 gap-6">
-
-  <div className="bg-slate-800 p-6 rounded-2xl">
-    <h2 className="text-2xl font-bold mb-4">Monthly Sales</h2>
-
-    <div className="space-y-4">
-      <div>
-        <p>January</p>
-        <div className="w-full bg-slate-700 rounded-full h-4">
-          <div className="bg-blue-500 h-4 rounded-full w-[70%]"></div>
-        </div>
-      </div>
-
-      <div>
-        <p>February</p>
-        <div className="w-full bg-slate-700 rounded-full h-4">
-          <div className="bg-green-500 h-4 rounded-full w-[50%]"></div>
-        </div>
-      </div>
-
-      <div>
-        <p>March</p>
-        <div className="w-full bg-slate-700 rounded-full h-4">
-          <div className="bg-purple-500 h-4 rounded-full w-[90%]"></div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div className="bg-slate-800 p-6 rounded-2xl">
-    <h2 className="text-2xl font-bold mb-4">System Status</h2>
-
-    <div className="space-y-3">
-      <div className="flex justify-between">
-        <span>Server</span>
-        <span className="text-green-400">Online</span>
-      </div>
-
-      <div className="flex justify-between">
-        <span>Database</span>
-        <span className="text-green-400">Connected</span>
-      </div>
-
-      <div className="flex justify-between">
-        <span>AI Engine</span>
-        <span className="text-yellow-400">Processing</span>
-      </div>
-    </div>
-  </div>
-
-</div>
-  <table className="w-full text-left">
-    <thead>
-      <tr className="text-gray-400">
-        <th className="pb-3">Customer</th>
-        <th className="pb-3">Product</th>
-        <th className="pb-3">Amount</th>
-      </tr>
-    </thead>
-
-    <tbody>
-      <tr>
-        <td className="py-2">Ali</td>
-        <td>Boxes</td>
-        <td>PKR 25,000</td>
-      </tr>
-
-      <tr>
-        <td className="py-2">Ahmed</td>
-        <td>Tapes</td>
-        <td>PKR 15,000</td>
-      </tr>
-
-      <tr>
-        <td className="py-2">Usman</td>
-        <td>Packaging Roll</td>
-        <td>PKR 40,000</td>
-      </tr>
-    </tbody>
-  </table>
-</div><div className="mt-10 bg-slate-800 p-6 rounded-2xl">
-
-  <h2 className="text-3xl font-bold mb-6">
-    Create Invoice
-  </h2>
-
-  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-
-    <input
-      type="text"
-      placeholder="Customer Name"
-      className="p-4 rounded-xl bg-slate-700 text-white"
-    />
-
-    <input
-      type="text"
-      placeholder="Product Name"
-      className="p-4 rounded-xl bg-slate-700 text-white"
-    />
-
-    <input
-      type="number"
-      placeholder="Quantity"
-      className="p-4 rounded-xl bg-slate-700 text-white"
-    />
-
-    <input
-      type="number"
-      placeholder="Price"
-      className="p-4 rounded-xl bg-slate-700 text-white"
-    />
-
-  </div>
-
-  <button className="mt-6 bg-blue-600 hover:bg-blue-700 px-8 py-4 rounded-xl font-bold">
-    Generate Invoice
-  </button>
-
-</div>
       </section>
-<footer className="fixed bottom-0 left-0 w-full bg-slate-900 border-t border-slate-700 p-4 text-center text-gray-400">
-  © 2026 Essa ERP System — AI Powered Business Solution
-</footer>
-<div className="fixed top-5 right-5 space-y-4">
-
-  <div className="bg-green-600 px-6 py-4 rounded-2xl shadow-2xl">
-    ✅ New Order Received
-  </div>
-
-  <div className="bg-blue-600 px-6 py-4 rounded-2xl shadow-2xl">
-    📦 Inventory Updated
-  </div>
-
-  <div className="bg-purple-600 px-6 py-4 rounded-2xl shadow-2xl">
-    🤖 AI Report Generated
-  </div>
-
-</div>
-<div className="mt-10 bg-slate-800 p-6 rounded-2xl">
-
-  <h2 className="text-3xl font-bold mb-6">
-    Live Activity
-  </h2>
-
-  <div className="space-y-4">
-
-    <div className="flex justify-between bg-slate-700 p-4 rounded-xl">
-      <span>Ali Traders placed new order</span>
-      <span className="text-green-400">2 min ago</span>
-    </div>
-
-    <div className="flex justify-between bg-slate-700 p-4 rounded-xl">
-      <span>Inventory stock updated</span>
-      <span className="text-blue-400">10 min ago</span>
-    </div>
-
-    <div className="flex justify-between bg-slate-700 p-4 rounded-xl">
-      <span>Invoice generated successfully</span>
-      <span className="text-purple-400">30 min ago</span>
-    </div>
-
-  </div>
-
-</div>
-<div className="mt-10 grid grid-cols-2 md:grid-cols-4 gap-6">
-
-  <button className="bg-blue-600 hover:bg-blue-700 p-6 rounded-2xl text-xl font-bold">
-    ➕ Add Product
-  </button>
-
-  <button className="bg-green-600 hover:bg-green-700 p-6 rounded-2xl text-xl font-bold">
-    🧾 Create Invoice
-  </button>
-
-  <button className="bg-purple-600 hover:bg-purple-700 p-6 rounded-2xl text-xl font-bold">
-    📊 Generate Report
-  </button>
-
-  <button className="bg-red-600 hover:bg-red-700 p-6 rounded-2xl text-xl font-bold">
-    ⚠ Low Stock
-  </button>
-
-</div>
-<div className="mt-10 bg-slate-800 p-6 rounded-2xl">
-
-  <h2 className="text-3xl font-bold mb-6">
-    Employee Management
-  </h2>
-
-  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-
-    <div className="bg-slate-700 p-5 rounded-2xl">
-      <h3 className="text-2xl font-bold">
-        Ali Khan
-      </h3>
-
-      <p className="text-gray-400 mt-2">
-        Sales Manager
-      </p>
-
-      <p className="text-green-400 mt-4">
-        Active
-      </p>
-    </div>
-
-    <div className="bg-slate-700 p-5 rounded-2xl">
-      <h3 className="text-2xl font-bold">
-        Ahmed Raza
-      </h3>
-
-      <p className="text-gray-400 mt-2">
-        Inventory Manager
-      </p>
-
-      <p className="text-yellow-400 mt-4">
-        On Leave
-      </p>
-    </div>
-
-    <div className="bg-slate-700 p-5 rounded-2xl">
-      <h3 className="text-2xl font-bold">
-        Usman Ali
-      </h3>
-
-      <p className="text-gray-400 mt-2">
-        Accountant
-      </p>
-
-      <p className="text-green-400 mt-4">
-        Active
-      </p>
-    </div>
-
-  </div>
-
-</div>
-<div className="mt-10 bg-slate-800 p-6 rounded-2xl">
-
-  <h2 className="text-3xl font-bold mb-6">
-    Finance & Accounts
-  </h2>
-
-  <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-
-    <div className="bg-slate-700 p-5 rounded-2xl">
-      <h3 className="text-xl">
-        Total Revenue
-      </h3>
-
-      <p className="text-3xl font-bold text-green-400 mt-4">
-        PKR 2.5M
-      </p>
-    </div>
-
-    <div className="bg-slate-700 p-5 rounded-2xl">
-      <h3 className="text-xl">
-        Expenses
-      </h3>
-
-      <p className="text-3xl font-bold text-red-400 mt-4">
-        PKR 800K
-      </p>
-    </div>
-
-    <div className="bg-slate-700 p-5 rounded-2xl">
-      <h3 className="text-xl">
-        Profit
-      </h3>
-
-      <p className="text-3xl font-bold text-blue-400 mt-4">
-        PKR 1.7M
-      </p>
-    </div>
-
-    <div className="bg-slate-700 p-5 rounded-2xl">
-      <h3 className="text-xl">
-        Pending Payments
-      </h3>
-
-      <p className="text-3xl font-bold text-yellow-400 mt-4">
-        PKR 320K
-      </p>
-    </div>
-
-  </div>
-
-</div>
-<div className="mt-10 bg-slate-800 p-6 rounded-2xl">
-
-  <h2 className="text-3xl font-bold mb-6">
-    Production Management
-  </h2>
-
-  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-
-    <div className="bg-slate-700 p-5 rounded-2xl">
-      <h3 className="text-2xl font-bold">
-        Daily Production
-      </h3>
-
-      <p className="text-4xl font-bold text-green-400 mt-4">
-        12,500 Units
-      </p>
-    </div>
-
-    <div className="bg-slate-700 p-5 rounded-2xl">
-      <h3 className="text-2xl font-bold">
-        Machine Status
-      </h3>
-
-      <p className="text-4xl font-bold text-blue-400 mt-4">
-        Running
-      </p>
-    </div>
-
-    <div className="bg-slate-700 p-5 rounded-2xl">
-      <h3 className="text-2xl font-bold">
-        Production Efficiency
-      </h3>
-
-      <p className="text-4xl font-bold text-purple-400 mt-4">
-        92%
-      </p>
-    </div>
-
-  </div>
-<div className="mt-10 bg-slate-800 p-6 rounded-2xl">
-
-  <h2 className="text-3xl font-bold mb-6">
-    Dispatch & Logistics
-  </h2>
-
-  <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-
-    <div className="bg-slate-700 p-5 rounded-2xl">
-      <h3 className="text-xl">
-        Vehicles Active
-      </h3>
-
-      <p className="text-4xl font-bold text-green-400 mt-4">
-        12
-      </p>
-    </div>
-
-    <div className="bg-slate-700 p-5 rounded-2xl">
-      <h3 className="text-xl">
-        Deliveries Today
-      </h3>
-
-      <p className="text-4xl font-bold text-blue-400 mt-4">
-        48
-      </p>
-    </div>
-
-    <div className="bg-slate-700 p-5 rounded-2xl">
-      <h3 className="text-xl">
-        Pending Dispatch
-      </h3>
-
-      <p className="text-4xl font-bold text-yellow-400 mt-4">
-        7
-      </p>
-    </div>
-
-    <div className="bg-slate-700 p-5 rounded-2xl">
-      <h3 className="text-xl">
-        Freight Cost
-      </h3>
-
-      <p className="text-4xl font-bold text-red-400 mt-4">
-        PKR 135K
-      </p>
-    </div>
-
-  </div>
-
-</div>
-</div>
-<div className="mt-10 bg-slate-800 p-6 rounded-2xl">
-
-  <h2 className="text-3xl font-bold mb-6">
-    Supplier Management
-  </h2>
-
-  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-
-    <div className="bg-slate-700 p-5 rounded-2xl">
-      <h3 className="text-2xl font-bold">
-        AJ Paper Mills
-      </h3>
-
-      <p className="text-gray-400 mt-2">
-        Raw Material Supplier
-      </p>
-
-      <p className="text-green-400 mt-4">
-        Active Supplier
-      </p>
-    </div>
-
-    <div className="bg-slate-700 p-5 rounded-2xl">
-      <h3 className="text-2xl font-bold">
-        Hassan Packaging
-      </h3>
-
-      <p className="text-gray-400 mt-2">
-        Carton Material Supplier
-      </p>
-
-      <p className="text-blue-400 mt-4">
-        Verified
-      </p>
-    </div>
-
-    <div className="bg-slate-700 p-5 rounded-2xl">
-      <h3 className="text-2xl font-bold">
-        Global Logistics
-      </h3>
-
-      <p className="text-gray-400 mt-2">
-        Freight Partner
-      </p>
-
-      <p className="text-yellow-400 mt-4">
-        Pending Renewal
-      </p>
-    </div>
-
-  </div>
-
-</div>
-<div className="mt-10 bg-slate-800 p-6 rounded-2xl">
-
-  <h2 className="text-3xl font-bold mb-6">
-    Customer Ledger
-  </h2>
-
-  <div className="space-y-4">
-
-    <div className="bg-slate-700 p-5 rounded-2xl flex justify-between items-center">
-      <div>
-        <h3 className="text-2xl font-bold">
-          Ashraf Sons Pharma
-        </h3>
-
-        <p className="text-gray-400 mt-2">
-          Outstanding Balance
-        </p>
-      </div>
-
-      <p className="text-3xl font-bold text-yellow-400">
-        PKR 450K
-      </p>
-    </div>
-
-    <div className="bg-slate-700 p-5 rounded-2xl flex justify-between items-center">
-      <div>
-        <h3 className="text-2xl font-bold">
-          Nutra Pharma
-        </h3>
-
-        <p className="text-gray-400 mt-2">
-          Paid Successfully
-        </p>
-      </div>
-
-      <p className="text-3xl font-bold text-green-400">
-        PKR 0
-      </p>
-    </div>
-
-    <div className="bg-slate-700 p-5 rounded-2xl flex justify-between items-center">
-      <div>
-        <h3 className="text-2xl font-bold">
-          Surgitex Pharma
-        </h3>
-
-        <p className="text-gray-400 mt-2">
-          Pending Recovery
-        </p>
-      </div>
-
-      <p className="text-3xl font-bold text-red-400">
-        PKR 180K
-      </p>
-    </div>
-
-  </div>
-
-</div>
-<div className="mt-10 bg-slate-800 p-6 rounded-2xl">
-
-  <h2 className="text-3xl font-bold mb-6">
-    GST & Tax Management
-  </h2>
-
-  <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-
-    <div className="bg-slate-700 p-5 rounded-2xl">
-      <h3 className="text-xl">
-        GST Collected
-      </h3>
-
-      <p className="text-3xl font-bold text-green-400 mt-4">
-        PKR 580K
-      </p>
-    </div>
-
-    <div className="bg-slate-700 p-5 rounded-2xl">
-      <h3 className="text-xl">
-        GST Paid
-      </h3>
-
-      <p className="text-3xl font-bold text-blue-400 mt-4">
-        PKR 320K
-      </p>
-    </div>
-
-    <div className="bg-slate-700 p-5 rounded-2xl">
-      <h3 className="text-xl">
-        Tax Pending
-      </h3>
-
-      <p className="text-3xl font-bold text-yellow-400 mt-4">
-        PKR 85K
-      </p>
-    </div>
-
-    <div className="bg-slate-700 p-5 rounded-2xl">
-      <h3 className="text-xl">
-        Filing Status
-      </h3>
-
-      <p className="text-3xl font-bold text-purple-400 mt-4">
-        Updated
-      </p>
-    </div>
-
-  </div>
-
-</div>
-<div className="mt-10 bg-slate-800 p-6 rounded-2xl">
-
-  <h2 className="text-3xl font-bold mb-6">
-    Paper & Raw Material
-  </h2>
-
-  <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-
-    <div className="bg-slate-700 p-5 rounded-2xl">
-      <h3 className="text-xl">
-        Kraft Paper Stock
-      </h3>
-
-      <p className="text-3xl font-bold text-green-400 mt-4">
-        12 Tons
-      </p>
-    </div>
-
-    <div className="bg-slate-700 p-5 rounded-2xl">
-      <h3 className="text-xl">
-        GSM Average
-      </h3>
-
-      <p className="text-3xl font-bold text-blue-400 mt-4">
-        180 GSM
-      </p>
-    </div>
-
-    <div className="bg-slate-700 p-5 rounded-2xl">
-      <h3 className="text-xl">
-        Raw Material Cost
-      </h3>
-
-      <p className="text-3xl font-bold text-yellow-400 mt-4">
-        PKR 2.1M
-      </p>
-    </div>
-
-    <div className="bg-slate-700 p-5 rounded-2xl">
-      <h3 className="text-xl">
-        Paper Wastage
-      </h3>
-
-      <p className="text-3xl font-bold text-red-400 mt-4">
-        3%
-      </p>
-    </div>
-
-  </div>
-
-</div>
     </main>
   );
 }
