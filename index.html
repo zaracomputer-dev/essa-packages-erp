@@ -1,0 +1,854 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Eissa Packages POS & Ledger</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div id="toastContainer" class="toast-container" aria-live="polite"></div>
+  <section id="loginScreen" class="login-screen">
+    <form id="loginForm" class="login-card">
+      <h1>Eissa Packages POS</h1>
+      <p>Cloud database login required</p>
+      <label>Email<input name="username" type="email" placeholder="your-supabase-user@email.com" autocomplete="username"></label>
+      <label>Password<input name="password" type="password" autocomplete="current-password"></label>
+      <p class="muted">Use the same Supabase email and password on every computer to share products, invoices and dashboard totals.</p>
+      <button type="submit">Login</button>
+    </form>
+  </section>
+
+  <header class="topbar">
+    <div>
+      <div class="brand-line">
+        <span class="brand-logo" aria-hidden="true">EP</span>
+        <div>
+          <h1>Eissa Packages POS & Ledger</h1>
+          <p>Professional dashboard for customers, stock, invoices, quotations, payments, driver charges and balance sheet</p>
+        </div>
+      </div>
+    </div>
+    <div class="actions">
+      <span id="liveClock" class="clock"></span>
+      <button id="themeBtn" type="button">Dark</button>
+      <button id="printBtn" type="button">Print</button>
+      <button id="exportBtn" type="button">Backup</button>
+      <label class="file-btn">
+        Restore
+        <input id="importFile" type="file" accept="application/json">
+      </label>
+    </div>
+  </header>
+
+  <main class="layout">
+    <nav class="tabs" aria-label="App sections">
+      <button class="tab active" data-view="dashboard">Dashboard</button>
+      <button class="tab" data-view="customers">Customers</button>
+      <button class="tab" data-view="suppliers">Suppliers</button>
+      <button class="tab" data-view="products">Products</button>
+      <button class="tab" data-view="sales">Sales</button>
+      <button class="tab" data-view="purchases">Purchases</button>
+      <button class="tab" data-view="customerLedger">Customer Ledger</button>
+      <button class="tab" data-view="supplierLedger">Supplier Ledger</button>
+      <button class="tab" data-view="journalBook">Roznamcha</button>
+      <button class="tab" data-view="entries">Entries</button>
+      <button class="tab" data-view="invoices">Invoices</button>
+      <button class="tab" data-view="quotations">Quotations</button>
+      <button class="tab" data-view="dispatch">Dispatch</button>
+      <button class="tab" data-view="production">Production</button>
+      <button class="tab" data-view="staff">Staff</button>
+      <button class="tab" data-view="salaryExpenses">Salary & Expenses</button>
+      <button class="tab" data-view="banks">Bank Accounts</button>
+      <button class="tab" data-view="reports">Reports</button>
+      <button class="tab" data-view="financials">Financials</button>
+      <button class="tab" data-view="audit">Audit Logs</button>
+      <button class="tab" data-view="monthly">Monthly Sheet</button>
+      <button class="tab" data-view="balance">Balance Sheet</button>
+      <button class="tab" data-view="assistant">AI Assistant</button>
+      <button class="tab" data-view="settings">Settings</button>
+    </nav>
+
+    <section id="dashboard" class="view active">
+      <div class="dashboard-hero panel">
+        <div>
+          <span class="eyebrow">Business Overview</span>
+          <h2>Eissa Packages Dashboard</h2>
+          <p>Track sales, purchases, outstanding balances, stock value and alerts from one place.</p>
+        </div>
+        <div class="hero-logo">
+          <span class="brand-logo large" aria-hidden="true">EP</span>
+          <strong>Eissa Packages</strong>
+        </div>
+      </div>
+      <div class="quick-search panel">
+        <input id="globalSearch" placeholder="Search customers, products, invoices...">
+        <div id="globalResults"></div>
+      </div>
+      <div class="metrics">
+        <article><span>Total Sales</span><strong id="mSales">0</strong></article>
+        <article><span>Total Purchases</span><strong id="mPurchases">0</strong></article>
+        <article><span>Total Received</span><strong id="mReceived">0</strong></article>
+        <article><span>Total Paid</span><strong id="mPaid">0</strong></article>
+        <article><span>Driver Charges</span><strong id="mDriver">0</strong></article>
+        <article><span>Current Balance</span><strong id="mBalance">0</strong></article>
+        <article><span>Stock Value</span><strong id="mStockValue">0</strong></article>
+        <article><span>Low Stock</span><strong id="mLowStock">0</strong></article>
+        <article><span>Net Profit</span><strong id="mNetProfit">0</strong></article>
+        <article><span>Receivables</span><strong id="mReceivables">0</strong></article>
+        <article><span>Payables</span><strong id="mPayables">0</strong></article>
+        <article><span>Cash Balance</span><strong id="mCashBalance">0</strong></article>
+        <article><span>Bank Balance</span><strong id="mBankBalance">0</strong></article>
+      </div>
+      <div class="grid two dashboard-grid">
+        <div class="panel">
+          <h2>Sales Chart</h2>
+          <div id="salesChart" class="chart"></div>
+        </div>
+        <div class="panel">
+          <h2>Notifications</h2>
+          <ul id="notificationList" class="notifications"></ul>
+        </div>
+      </div>
+      <div class="panel">
+        <h2>Recent Entries</h2>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Date</th><th>Type</th><th>Customer</th><th>Details</th><th>Amount</th></tr>
+            </thead>
+            <tbody id="recentEntries"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section id="customers" class="view">
+      <div class="grid two">
+        <form id="customerForm" class="panel">
+          <h2>New Customer</h2>
+          <label>Name<input name="name" required placeholder="Example: Fork Paper Company"></label>
+          <label>Phone<input name="phone" placeholder="03xx-xxxxxxx"></label>
+          <label>Address<input name="address" placeholder="City / market"></label>
+          <label>Opening Balance<input name="opening" type="number" step="0.01" value="0"></label>
+          <button type="submit">Save Customer</button>
+        </form>
+        <div class="panel">
+          <h2>Customer List</h2>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Name</th><th>Phone</th><th>Opening</th><th>Balance</th><th></th></tr></thead>
+              <tbody id="customerRows"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="products" class="view">
+      <div class="grid two">
+        <form id="productForm" class="panel">
+          <h2>New Product</h2>
+          <label>Product Name<input name="name" required placeholder="Drip, cotton, paper"></label>
+          <label>Category<input name="category" placeholder="Drip / paper / general"></label>
+          <label>Barcode / SKU<input name="barcode" placeholder="Optional"></label>
+          <label>Purchase Price<input name="cost" type="number" step="0.01" value="0"></label>
+          <label>Sale Price<input name="price" type="number" step="0.01" value="0"></label>
+          <label>Stock Quantity<input name="stock" type="number" step="0.01" value="0"></label>
+          <label>Low Stock Alert<input name="lowStock" type="number" step="0.01" value="5"></label>
+          <button type="submit">Save Product</button>
+        </form>
+        <div class="panel">
+          <div class="section-head">
+            <h2>Inventory</h2>
+            <input id="productSearch" placeholder="Search product">
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Name</th><th>Category</th><th>Barcode</th><th>Cost</th><th>Price</th><th>Stock</th><th>Status</th><th></th></tr></thead>
+              <tbody id="productRows"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="suppliers" class="view">
+      <div class="grid two">
+        <form id="supplierForm" class="panel">
+          <h2>New Supplier</h2>
+          <label>Name<input name="name" required placeholder="Supplier / mill / vendor"></label>
+          <label>Phone<input name="phone"></label>
+          <label>Address<input name="address"></label>
+          <label>Opening Balance<input name="opening" type="number" step="0.01" value="0"></label>
+          <button type="submit">Save Supplier</button>
+        </form>
+        <div class="panel">
+          <h2>Supplier Ledger</h2>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Name</th><th>Phone</th><th>Opening</th><th>Balance</th><th></th></tr></thead>
+              <tbody id="supplierRows"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="entries" class="view">
+      <div class="grid two">
+        <form id="entryForm" class="panel">
+          <h2>New Entry</h2>
+          <label>Date<input name="date" type="date" required></label>
+          <label>Type
+            <select name="type" required>
+              <option value="sale">Sale</option>
+              <option value="purchase">Purchase</option>
+              <option value="receive">Receive</option>
+              <option value="payment">Payment</option>
+              <option value="driver">Driver Charge</option>
+              <option value="expense">Other Expense</option>
+            </select>
+          </label>
+          <label>Customer / Party<select name="customerId" id="entryCustomer"></select></label>
+          <label>Supplier / Vendor<select name="supplierId" id="entrySupplier"></select></label>
+          <label>Product<select name="productId" id="entryProduct"></select></label>
+          <label>Goods / Details<input name="details" placeholder="Goods, vehicle number, note"></label>
+          <label>Quantity<input name="quantity" type="number" step="0.01" value="1"></label>
+          <label>Rate<input name="rate" type="number" step="0.01" value="0"></label>
+          <label>Amount<input name="amount" type="number" step="0.01" value="0"></label>
+          <button type="submit">Save Entry</button>
+        </form>
+        <div class="panel">
+          <h2>All Entries</h2>
+          <div class="filters">
+            <input id="entrySearch" placeholder="Search name or details">
+            <input id="entryMonth" type="month">
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr><th>Date</th><th>Type</th><th>Customer</th><th>Details</th><th>Qty</th><th>Rate</th><th>Amount</th><th></th></tr>
+              </thead>
+              <tbody id="entryRows"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="sales" class="view">
+      <div class="grid two">
+        <form id="salesInvoiceForm" class="panel">
+          <h2>Sales Invoice</h2>
+          <label>Invoice Number<input name="number" required></label>
+          <label>Date<input name="date" type="date" required></label>
+          <label>Customer<select name="customerId" id="salesCustomer"></select></label>
+          <label>Sales Type
+            <select name="salesType">
+              <option value="stock">Stock Sale</option>
+              <option value="direct_dispatch">Direct Dispatch Sale</option>
+            </select>
+          </label>
+          <label>Product<select name="productId" id="salesProduct"></select></label>
+          <label>Description<input name="details" placeholder="Carton / packaging item"></label>
+          <label>Quantity<input name="quantity" type="number" step="0.01" value="1"></label>
+          <label>Rate<input name="rate" type="number" step="0.01" value="0"></label>
+          <label>GST %<input name="taxPercent" type="number" step="0.01" value="0"></label>
+          <label>Discount<input name="discount" type="number" step="0.01" value="0"></label>
+          <label>Freight Case
+            <select name="freightCase">
+              <option value="customer_direct">Customer pays transporter directly</option>
+              <option value="recoverable">Company pays and recovers from customer</option>
+              <option value="company_expense">Company pays, not recoverable</option>
+            </select>
+          </label>
+          <label>Freight Amount<input name="freight" type="number" step="0.01" value="0"></label>
+          <button type="submit">Save Sales Invoice</button>
+        </form>
+        <div class="panel">
+          <h2>Sales Invoice Register</h2>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>No</th><th>Date</th><th>Type</th><th>Customer</th><th>Item</th><th>Qty</th><th>Total</th><th>Freight</th><th></th></tr></thead>
+              <tbody id="salesInvoiceRows"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="purchases" class="view">
+      <div class="grid two">
+        <form id="purchaseInvoiceForm" class="panel">
+          <h2>Purchase Invoice</h2>
+          <label>Invoice Number<input name="number" required></label>
+          <label>Date<input name="date" type="date" required></label>
+          <label>Supplier<select name="supplierId" id="purchaseSupplier"></select></label>
+          <label>Product<select name="productId" id="purchaseProduct"></select></label>
+          <label>Description<input name="details" placeholder="Paper / raw material / packaging item"></label>
+          <label>Quantity<input name="quantity" type="number" step="0.01" value="1"></label>
+          <label>Rate<input name="rate" type="number" step="0.01" value="0"></label>
+          <label>GST %<input name="taxPercent" type="number" step="0.01" value="0"></label>
+          <label>Freight / Loading<input name="freight" type="number" step="0.01" value="0"></label>
+          <button type="submit">Save Purchase Invoice</button>
+        </form>
+        <div class="panel">
+          <h2>Purchase Invoice Register</h2>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>No</th><th>Date</th><th>Supplier</th><th>Item</th><th>Qty</th><th>Total</th><th></th></tr></thead>
+              <tbody id="purchaseInvoiceRows"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="customerLedger" class="view">
+      <div class="panel">
+        <div class="section-head">
+          <h2>Customer Ledger</h2>
+          <select id="customerLedgerSelect"></select>
+        </div>
+        <div class="metrics small">
+          <article><span>Opening Balance</span><strong id="customerLedgerOpening">0</strong></article>
+          <article><span>Sales Invoices</span><strong id="customerLedgerSales">0</strong></article>
+          <article><span>Payments Received</span><strong id="customerLedgerReceived">0</strong></article>
+          <article><span>Freight Recovery</span><strong id="customerLedgerFreight">0</strong></article>
+          <article><span>Outstanding Balance</span><strong id="customerLedgerOutstanding">0</strong></article>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Date</th><th>Type</th><th>Ref</th><th>Debit</th><th>Credit</th><th>Running Balance</th></tr></thead>
+            <tbody id="customerLedgerRows"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section id="supplierLedger" class="view">
+      <div class="panel">
+        <div class="section-head">
+          <h2>Supplier Ledger</h2>
+          <select id="supplierLedgerSelect"></select>
+        </div>
+        <div class="metrics small">
+          <article><span>Opening Balance</span><strong id="supplierLedgerOpening">0</strong></article>
+          <article><span>Purchase Invoices</span><strong id="supplierLedgerPurchases">0</strong></article>
+          <article><span>Payments Made</span><strong id="supplierLedgerPaid">0</strong></article>
+          <article><span>Outstanding Payable</span><strong id="supplierLedgerOutstanding">0</strong></article>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Date</th><th>Type</th><th>Ref</th><th>Debit</th><th>Credit</th><th>Running Balance</th></tr></thead>
+            <tbody id="supplierLedgerRows"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section id="journalBook" class="view">
+      <div class="panel">
+        <div class="section-head">
+          <h2>Roznamcha / Journal Book</h2>
+          <input id="journalMonth" type="month">
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Date</th><th>Voucher No</th><th>Description</th><th>Debit Account</th><th>Credit Account</th><th>Amount</th></tr>
+            </thead>
+            <tbody id="journalRows"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section id="invoices" class="view">
+      <div class="grid two invoice-layout">
+        <form id="invoiceForm" class="panel">
+          <h2>New Invoice</h2>
+          <label>Invoice Number<input name="number" required></label>
+          <label>Date<input name="date" type="date" required></label>
+          <label>Due Date<input name="dueDate" type="date"></label>
+          <label>Sales Type
+            <select name="salesType">
+              <option value="stock">Stock Sale</option>
+              <option value="direct_dispatch">Direct Dispatch Sale</option>
+            </select>
+          </label>
+          <label>Your Business Name<input name="sellerName" placeholder="Example: AFC Traders"></label>
+          <label>Your Address<textarea name="sellerAddress" rows="2"></textarea></label>
+          <label>Customer<select name="customerId" id="invoiceCustomer"></select></label>
+          <label>Customer Name<input name="buyerName" placeholder="If not in customer list"></label>
+          <label>Customer Address<textarea name="buyerAddress" rows="2"></textarea></label>
+          <div class="invoice-items-head">
+            <h3>Items</h3>
+            <button id="addInvoiceItem" type="button">Add Item</button>
+          </div>
+          <div id="invoiceItems" class="invoice-items"></div>
+          <label>Discount<input name="discount" type="number" step="0.01" value="0"></label>
+          <label>Tax %<input name="taxPercent" type="number" step="0.01" value="0"></label>
+          <label>Delivery / Driver Charge<input name="shipping" type="number" step="0.01" value="0"></label>
+          <label>Terms<textarea name="terms" rows="3" placeholder="Payment, delivery or other terms"></textarea></label>
+          <div class="actions">
+            <button type="submit">Save Invoice</button>
+            <button id="printInvoiceBtn" type="button">Print Invoice</button>
+            <button id="pdfInvoiceBtn" type="button">Save PDF</button>
+            <button id="emailInvoiceBtn" type="button">Email</button>
+            <button id="whatsappInvoiceBtn" type="button">WhatsApp</button>
+          </div>
+        </form>
+
+        <div class="panel">
+          <div class="section-head">
+            <h2>Invoice Preview</h2>
+            <strong id="invoiceGrandTotal">0</strong>
+          </div>
+          <div id="invoicePreview" class="invoice-preview"></div>
+          <h2>Saved Invoices</h2>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Number</th><th>Date</th><th>Customer</th><th>Total</th><th>Actions</th></tr></thead>
+              <tbody id="invoiceRows"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="dispatch" class="view">
+      <div class="grid two">
+        <form id="dispatchForm" class="panel">
+          <h2>Dispatch & Freight</h2>
+          <label>Date<input name="date" type="date" required></label>
+          <label>Customer<select name="customerId" id="dispatchCustomer"></select></label>
+          <label>Vehicle / Driver<input name="vehicle" placeholder="Truck number / driver name"></label>
+          <label>Goods<input name="goods" placeholder="Drip / paper / cotton"></label>
+          <label>Quantity<input name="quantity" type="number" step="0.01" value="0"></label>
+          <label>Freight Amount<input name="freight" type="number" step="0.01" value="0"></label>
+          <label>Status<select name="status"><option>Pending</option><option>Dispatched</option><option>Delivered</option></select></label>
+          <button type="submit">Save Dispatch</button>
+        </form>
+        <div class="panel">
+          <h2>Dispatch Register</h2>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Date</th><th>Customer</th><th>Vehicle</th><th>Goods</th><th>Qty</th><th>Freight</th><th>Status</th><th></th></tr></thead>
+              <tbody id="dispatchRows"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="production" class="view">
+      <div class="grid two">
+        <form id="productionForm" class="panel">
+          <h2>Production Management</h2>
+          <label>Date<input name="date" type="date" required></label>
+          <label>Finished Product<select name="productId" id="productionProduct"></select></label>
+          <label>Produced Quantity<input name="quantity" type="number" step="0.01" value="0"></label>
+          <label>Raw Material Cost<input name="rawCost" type="number" step="0.01" value="0"></label>
+          <label>Labour Cost<input name="labourCost" type="number" step="0.01" value="0"></label>
+          <label>Freight / Other Cost<input name="otherCost" type="number" step="0.01" value="0"></label>
+          <button type="submit">Save Production</button>
+        </form>
+        <div class="panel">
+          <h2>AI Costing</h2>
+          <div id="costingBox" class="erp-summary"></div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Date</th><th>Product</th><th>Qty</th><th>Total Cost</th><th>Unit Cost</th><th></th></tr></thead>
+              <tbody id="productionRows"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="staff" class="view">
+      <div class="grid two">
+        <form id="staffForm" class="panel">
+          <h2>Staff Management</h2>
+          <label>Name<input name="name" required></label>
+          <label>Role<input name="role" placeholder="Admin / Sales / Dispatch"></label>
+          <label>Phone<input name="phone"></label>
+          <label>Salary<input name="salary" type="number" step="0.01" value="0"></label>
+          <button type="submit">Save Staff</button>
+        </form>
+        <div class="panel">
+          <h2>Staff List</h2>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Name</th><th>Role</th><th>Phone</th><th>Salary</th><th></th></tr></thead>
+              <tbody id="staffRows"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="salaryExpenses" class="view">
+      <div class="grid two">
+        <form id="salaryExpenseForm" class="panel">
+          <h2>Salary & Misc Expense Ledger</h2>
+          <label>Date<input name="date" type="date" required></label>
+          <label>Expense Type
+            <select name="type" required>
+              <option value="director">Director Salary</option>
+              <option value="labour">Labour Salary</option>
+              <option value="mistry">Mistry Expense</option>
+              <option value="misc">Misc Expense</option>
+            </select>
+          </label>
+          <label>Name / Person<input name="person" placeholder="Director, labour, mistry or vendor name"></label>
+          <label>Details<input name="details" placeholder="Salary month, work details, notes"></label>
+          <label>Amount<input name="amount" type="number" step="0.01" value="0"></label>
+          <button type="submit">Save Expense</button>
+        </form>
+        <div class="panel">
+          <div class="section-head">
+            <h2>Expense Khata</h2>
+            <input id="salaryExpenseMonth" type="month">
+          </div>
+          <div class="metrics small">
+            <article><span>Director</span><strong id="salaryDirectorTotal">0</strong></article>
+            <article><span>Labour</span><strong id="salaryLabourTotal">0</strong></article>
+            <article><span>Mistry</span><strong id="salaryMistryTotal">0</strong></article>
+            <article><span>Misc</span><strong id="salaryMiscTotal">0</strong></article>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Date</th><th>Type</th><th>Person</th><th>Details</th><th>Amount</th><th></th></tr></thead>
+              <tbody id="salaryExpenseRows"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="banks" class="view">
+      <div class="grid two">
+        <form id="bankAccountForm" class="panel">
+          <h2>New Bank Account</h2>
+          <label>Bank Name
+            <select name="bankName" required>
+              <option value="Bank Al Habib">Bank Al Habib</option>
+              <option value="Meezan Bank">Meezan Bank</option>
+              <option value="HBL">HBL</option>
+              <option value="UBL">UBL</option>
+              <option value="MCB">MCB</option>
+              <option value="Allied Bank">Allied Bank</option>
+              <option value="Bank Alfalah">Bank Alfalah</option>
+              <option value="Other Bank">Other Bank</option>
+            </select>
+          </label>
+          <label>Account Title<input name="title" placeholder="Eissa Packages / owner name"></label>
+          <label>Account Number / IBAN<input name="accountNumber" placeholder="PK..."></label>
+          <label>Opening Balance<input name="opening" type="number" step="0.01" value="0"></label>
+          <button type="submit">Save Bank Account</button>
+        </form>
+        <div class="panel">
+          <h2>Bank Accounts</h2>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Bank</th><th>Title</th><th>Account</th><th>Opening</th><th>Balance</th><th></th></tr></thead>
+              <tbody id="bankAccountRows"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <div class="grid two">
+        <form id="bankTransactionForm" class="panel">
+          <h2>Bank Transaction</h2>
+          <label>Date<input name="date" type="date" required></label>
+          <label>Bank Account<select name="bankId" id="bankTransactionAccount"></select></label>
+          <label>Type
+            <select name="type">
+              <option value="deposit">Deposit</option>
+              <option value="withdrawal">Withdrawal</option>
+              <option value="transfer_in">Transfer In</option>
+              <option value="transfer_out">Transfer Out</option>
+              <option value="bank_charge">Bank Charge</option>
+            </select>
+          </label>
+          <label>Details<input name="details" placeholder="Cheque, cash deposit, online transfer"></label>
+          <label>Amount<input name="amount" type="number" step="0.01" value="0"></label>
+          <button type="submit">Save Transaction</button>
+        </form>
+        <div class="panel">
+          <div class="section-head">
+            <h2>Bank Ledger</h2>
+            <input id="bankLedgerMonth" type="month">
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Date</th><th>Bank</th><th>Type</th><th>Details</th><th>Amount</th><th></th></tr></thead>
+              <tbody id="bankTransactionRows"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="reports" class="view">
+      <div class="panel">
+        <h2>Reports & Analytics</h2>
+        <div class="metrics small">
+          <article><span>Gross Sales</span><strong id="rSales">0</strong></article>
+          <article><span>Stock Sales</span><strong id="rStockSales">0</strong></article>
+          <article><span>Direct Dispatch Sales</span><strong id="rDirectDispatchSales">0</strong></article>
+          <article><span>Gross Purchases</span><strong id="rPurchases">0</strong></article>
+          <article><span>Estimated Profit</span><strong id="rProfit">0</strong></article>
+          <article><span>Customer Outstanding</span><strong id="rOutstanding">0</strong></article>
+          <article><span>Freight Total</span><strong id="rFreight">0</strong></article>
+          <article><span>Freight Recovery</span><strong id="rFreightRecovery">0</strong></article>
+          <article><span>Freight Expense</span><strong id="rFreightExpense">0</strong></article>
+          <article><span>Production Cost</span><strong id="rProduction">0</strong></article>
+          <article><span>Salary & Misc</span><strong id="rSalaryExpense">0</strong></article>
+          <article><span>Bank Balance</span><strong id="rBankBalance">0</strong></article>
+        </div>
+        <div class="erp-summary" id="erpStatusBox"></div>
+      </div>
+      <div class="grid two">
+        <div class="panel">
+          <h2>Stock Sales Report</h2>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Date</th><th>Invoice</th><th>Customer</th><th>Item</th><th>Qty</th><th>Total</th></tr></thead>
+              <tbody id="stockSalesReportRows"></tbody>
+            </table>
+          </div>
+        </div>
+        <div class="panel">
+          <h2>Direct Dispatch Sales Report</h2>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Date</th><th>Invoice</th><th>Customer</th><th>Item</th><th>Qty</th><th>Total</th></tr></thead>
+              <tbody id="directDispatchSalesReportRows"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="section-head">
+          <h2>Inventory Movement Ledger</h2>
+          <div class="inline-actions">
+            <select id="inventoryProductFilter"></select>
+            <input id="inventoryMovementMonth" type="month">
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Date</th><th>Product</th><th>Type</th><th>Ref</th><th>Party</th><th>In</th><th>Out</th><th>Rate</th><th>Running</th></tr></thead>
+            <tbody id="inventoryMovementRows"></tbody>
+          </table>
+        </div>
+      </div>
+      <div class="panel">
+        <h2>Product-wise Stock Movement Report</h2>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Product</th><th>Category</th><th>Total In</th><th>Total Out</th><th>Net Movement</th><th>Current Stock</th><th>Stock Value</th></tr></thead>
+            <tbody id="productStockMovementRows"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section id="financials" class="view">
+      <div class="panel">
+        <h2>Financial Dashboard</h2>
+        <div class="metrics small">
+          <article><span>Net Profit</span><strong id="fNetProfit">0</strong></article>
+          <article><span>Total Receivables</span><strong id="fReceivables">0</strong></article>
+          <article><span>Total Payables</span><strong id="fPayables">0</strong></article>
+          <article><span>Cash Balance</span><strong id="fCashBalance">0</strong></article>
+          <article><span>Bank Balance</span><strong id="fBankBalance">0</strong></article>
+        </div>
+      </div>
+      <div class="grid two">
+        <div class="panel">
+          <h2>Trial Balance</h2>
+          <div class="erp-summary" id="trialBalanceStatus"></div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Account Name</th><th>Debit Balance</th><th>Credit Balance</th></tr></thead>
+              <tbody id="trialBalanceRows"></tbody>
+            </table>
+          </div>
+        </div>
+        <div class="panel">
+          <h2>Profit & Loss</h2>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Particulars</th><th>Amount</th></tr></thead>
+              <tbody id="profitLossRows"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <div class="panel">
+        <h2>Balance Sheet</h2>
+        <div class="grid two">
+          <div>
+            <h2>Assets</h2>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>Account</th><th>Amount</th></tr></thead>
+                <tbody id="balanceSheetAssetRows"></tbody>
+              </table>
+            </div>
+          </div>
+          <div>
+            <h2>Liabilities & Equity</h2>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>Account</th><th>Amount</th></tr></thead>
+                <tbody id="balanceSheetLiabilityRows"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="audit" class="view">
+      <div class="panel">
+        <div class="section-head">
+          <h2>Audit Logs & Cloud Backup Logs</h2>
+          <button id="clearAuditBtn" type="button">Clear Logs</button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Time</th><th>Action</th><th>Details</th></tr></thead>
+            <tbody id="auditRows"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section id="quotations" class="view">
+      <div class="grid two">
+        <form id="quotationForm" class="panel">
+          <h2>New Quotation</h2>
+          <label>Date<input name="date" type="date" required></label>
+          <label>Customer<select name="customerId" id="quotationCustomer"></select></label>
+          <label>Items<textarea name="items" rows="5" placeholder="Each line: goods, quantity, rate"></textarea></label>
+          <label>Total Amount<input name="total" type="number" step="0.01" value="0"></label>
+          <label>Note<input name="note" placeholder="Terms / delivery"></label>
+          <button type="submit">Save Quotation</button>
+        </form>
+        <div class="panel">
+          <h2>Quotation List</h2>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Date</th><th>Customer</th><th>Total</th><th>Note</th><th></th></tr></thead>
+              <tbody id="quotationRows"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="monthly" class="view">
+      <div class="panel">
+        <div class="section-head">
+          <h2>Monthly Sheet</h2>
+          <div class="actions">
+            <input id="monthlyPicker" type="month">
+            <button id="monthlyCsvBtn" type="button">CSV</button>
+          </div>
+        </div>
+        <div class="metrics small">
+          <article><span>Sales</span><strong id="monthSales">0</strong></article>
+          <article><span>Purchases</span><strong id="monthPurchases">0</strong></article>
+          <article><span>Received</span><strong id="monthReceived">0</strong></article>
+          <article><span>Paid</span><strong id="monthPaid">0</strong></article>
+          <article><span>Expenses</span><strong id="monthExpenses">0</strong></article>
+          <article><span>Net</span><strong id="monthNet">0</strong></article>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Date</th><th>Type</th><th>Customer</th><th>Details</th><th>Amount</th></tr></thead>
+            <tbody id="monthlyRows"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section id="balance" class="view">
+      <div class="panel">
+        <div class="section-head">
+          <h2>Balance Sheet</h2>
+          <button id="balanceCsvBtn" type="button">CSV</button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Customer</th><th>Opening</th><th>Sales</th><th>Received</th><th>Purchases</th><th>Paid</th><th>Balance</th></tr></thead>
+            <tbody id="balanceRows"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section id="settings" class="view">
+      <div class="grid two">
+        <form id="settingsForm" class="panel">
+          <h2>Company Settings</h2>
+          <label>Company Name<input name="companyName" placeholder="Eissa Packages"></label>
+          <label>Phone<input name="companyPhone"></label>
+          <label>Address<textarea name="companyAddress" rows="3"></textarea></label>
+          <label>NTN / STRN<input name="taxNumber" placeholder="Optional"></label>
+          <label>Default Tax %<input name="defaultTax" type="number" step="0.01" value="0"></label>
+          <label>Low Stock Default<input name="defaultLowStock" type="number" step="0.01" value="5"></label>
+          <button type="submit">Save Settings</button>
+        </form>
+        <div class="panel">
+          <h2>System</h2>
+          <p class="muted">Data uses live Supabase tables after cloud login. Local storage is kept only as an offline cache.</p>
+          <div id="syncStatus" class="erp-summary">Cloud database: not connected</div>
+          <button id="syncNowBtn" type="button">Sync Now</button>
+          <button id="dripPresetBtn" type="button">Setup Drip Product</button>
+          <button id="logoutBtn" type="button">Logout</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="assistant" class="view">
+      <div class="grid two assistant-layout">
+        <div class="panel">
+          <h2>AI Assistant</h2>
+          <div id="assistantChat" class="assistant-chat"></div>
+          <form id="assistantForm" class="assistant-form">
+            <input id="assistantInput" placeholder="Ask or type a command...">
+            <button id="assistantVoiceBtn" type="button">Voice</button>
+            <button type="submit">Send</button>
+          </form>
+        </div>
+        <div class="panel">
+          <h2>Example Commands</h2>
+          <div class="assistant-examples">
+            <button type="button" data-example="How do I create an invoice?">Invoice help</button>
+            <button type="button" data-example="add customer Ali opening 5000">Add customer</button>
+            <button type="button" data-example="add product Drip cost 62 price 90 stock 100">Add product</button>
+            <button type="button" data-example="sale Drip to Ali qty 12 rate 90">Add sale</button>
+            <button type="button" data-example="create invoice for Ali item Drip qty 12 rate 90">Create invoice</button>
+            <button type="button" data-example="Ali ko Drip qty 12 rate 90 invoice bana do">Roman Urdu invoice</button>
+            <button type="button" data-example="purchase Drip qty 50 rate 62">Add purchase</button>
+            <button type="button" data-example="receive from Ali amount 1000">Receive payment</button>
+            <button type="button" data-example="driver charge 2500 details truck rent">Driver charge</button>
+          </div>
+          <p class="muted">This assistant works offline with smart rules. A real ChatGPT-style agent can be added later with an OpenAI API key and online database.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
