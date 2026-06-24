@@ -34,3 +34,14 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+## Netlify Supabase configuration
+
+The POS cloud login reads Supabase settings from a Netlify function at `/.netlify/functions/supabase-config`.
+
+Set these Netlify environment variables for the production site:
+
+- `SUPABASE_URL`: your Supabase project URL, for example `https://your-project-ref.supabase.co`
+- `SUPABASE_ANON_KEY`: the public anon key or publishable key from Supabase Project Settings > API
+
+The app also accepts `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_PUBLISHABLE_KEY`, or `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` as fallbacks. Do not use the Supabase `service_role` key in Netlify or in `supabase-config.js`.

@@ -151,14 +151,29 @@ function markSyncClean() {
 
 function isSupabaseConfigured() {
   const config = window.EISSA_SUPABASE_CONFIG || {};
-  return Boolean(config.url && config.anonKey && window.supabase);
+  return Boolean(normalizeSupabaseUrl(config.url) && config.anonKey && window.supabase);
+}
+
+function normalizeSupabaseUrl(url) {
+  const value = String(url || "").trim().replace(/\/+$/, "");
+  return /^https:\/\/[a-z0-9-]+\.supabase\.co$/i.test(value) ? value : "";
 }
 
 function initSupabaseClient() {
   if (!isSupabaseConfigured()) return null;
   if (!supabaseClient) {
     const config = window.EISSA_SUPABASE_CONFIG;
-    supabaseClient = window.supabase.createClient(config.url, config.anonKey);
+    supabaseClient = window.supabase.createClient(
+      normalizeSupabaseUrl(config.url),
+      String(config.anonKey || "").trim(),
+      {
+        auth: {
+          persistSession: true,
+          autoRefreshToken: true,
+          detectSessionInUrl: false
+        }
+      }
+    );
   }
   return supabaseClient;
 }
@@ -3669,29 +3684,37 @@ document.querySelector("#dripPresetBtn").addEventListener("click", () => {
   alert("Drip product is ready: purchase price 62, sale price 90.");
 });
 
-document.querySelector("#loginForm").addEventListener("submit", event => {
+document.querySelector("#loginForm").addEventListener("submit", async event => {
   event.preventDefault();
   const data = formData(event.currentTarget);
+  const email = data.username.trim().toLowerCase();
+  const password = data.password;
+
   if (isSupabaseConfigured()) {
-    if (!data.username.includes("@")) {
+    if (!email.includes("@")) {
       alert("Production cloud login required. Use your Supabase email and password so all computers share the same database.");
       return;
     }
-    initSupabaseClient().auth.signInWithPassword({
-      email: data.username.trim(),
-      password: data.password
-    }).then(async ({ error }) => {
-      if (error) {
-        alert(`Cloud login failed: ${error.message}`);
-        return;
-      }
-      sessionStorage.setItem(SESSION_KEY, "1");
-      document.querySelector("#loginScreen").classList.add("hidden");
-      await setupCloudSync();
-    });
+
+    const client = initSupabaseClient();
+    if (!client) {
+      alert("Cloud login failed: Supabase is not configured on this deployment.");
+      return;
+    }
+
+    const { error } = await client.auth.signInWithPassword({ email, password });
+    if (error) {
+      alert(`Cloud login failed: ${error.message}`);
+      return;
+    }
+
+    sessionStorage.setItem(SESSION_KEY, "1");
+    document.querySelector("#loginScreen").classList.add("hidden");
+    await setupCloudSync();
     return;
   }
-  if (data.username === "admin" && data.password === "1234") {
+
+  if (email === "admin" && password === "1234") {
     sessionStorage.setItem(SESSION_KEY, "1");
     document.querySelector("#loginScreen").classList.add("hidden");
     scheduleCloudSync(200);
