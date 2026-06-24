@@ -45,3 +45,12 @@ Set these Netlify environment variables for the production site:
 - `SUPABASE_ANON_KEY`: the public anon key or publishable key from Supabase Project Settings > API
 
 The app also accepts `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_PUBLISHABLE_KEY`, or `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` as fallbacks. Do not use the Supabase `service_role` key in Netlify or in `supabase-config.js`.
+
+## Supabase password recovery configuration
+
+In Supabase Authentication > URL Configuration:
+
+- Site URL: set this to the deployed ERP site root, for example `https://your-netlify-site.netlify.app`
+- Redirect URLs: add the password reset page, for example `https://your-netlify-site.netlify.app/reset-password.html`
+
+The login page sends password recovery emails with `redirectTo` set to `${window.location.origin}/reset-password.html`, so each deployed domain must be allow-listed in Supabase Redirect URLs.

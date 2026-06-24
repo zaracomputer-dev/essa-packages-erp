@@ -108,6 +108,21 @@ textarea {
   font: inherit;
 }
 
+.link-button {
+  border: 0;
+  background: transparent;
+  color: var(--accent);
+  cursor: pointer;
+  font-weight: 800;
+  padding: 8px 0 0;
+  text-align: left;
+}
+
+.link-button:hover {
+  color: var(--accent-strong);
+  text-decoration: underline;
+}
+
 .topbar {
   display: flex;
   align-items: center;

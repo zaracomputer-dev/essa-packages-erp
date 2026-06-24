@@ -3723,6 +3723,33 @@ document.querySelector("#loginForm").addEventListener("submit", async event => {
   }
 });
 
+document.querySelector("#forgotPasswordBtn").addEventListener("click", async () => {
+  const form = document.querySelector("#loginForm");
+  const data = formData(form);
+  const email = data.username.trim().toLowerCase();
+
+  if (!email.includes("@")) {
+    alert("Enter your Supabase email first, then click Forgot password.");
+    return;
+  }
+
+  const client = initSupabaseClient();
+  if (!client) {
+    alert("Password recovery failed: Supabase is not configured on this deployment.");
+    return;
+  }
+
+  const redirectTo = `${window.location.origin}/reset-password.html`;
+  const { error } = await client.auth.resetPasswordForEmail(email, { redirectTo });
+
+  if (error) {
+    alert(`Password recovery failed: ${error.message}`);
+    return;
+  }
+
+  alert(`Password reset email sent to ${email}. Open the link in that email to create a new password.`);
+});
+
 document.querySelector("#exportBtn").addEventListener("click", () => {
   audit("Backup exported", "JSON backup downloaded");
   saveState();
